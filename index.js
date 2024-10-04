@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
@@ -57,13 +56,21 @@ app.post("/edit", async (req, res) => {
 
   try {
     await db.query("UPDATE items SET title = ($1) WHERE id = $2", [item, id])
-
+    res.redirect('/')
   } catch(err) {
     console.log(err)
   }
 });
 
-app.post("/delete", (req, res) => {});
+app.post("/delete", async (req, res) => {
+  const id = req.body.deleteItemId;
+  try {
+    await db.query("DELETE FROM items WHERE id = $1;",[id])
+    res.redirect("/")
+  } catch(err){
+    console.log(err)
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
